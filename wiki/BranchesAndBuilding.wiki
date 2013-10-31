@@ -1,0 +1,120 @@
+#summary Information about JCEF branches and instructions for downloading, building and packaging source code.
+
+== Background ==
+
+The JCEF project is an extension of the Chromium Embedded Framework project hosted at http://code.google.com/p/chromiumembedded. JCEF maintains a development branch that tracks the most recent CEF release branch. JCEF source code (both native code and Java code) can be built manually as described below.
+
+== Development ==
+
+Ongoing development of JCEF occurs in [http://code.google.com/p/javachromiumembedded/source/browse/#svn%2Ftrunk trunk]. This location tracks the current CEF3 release branch.
+
+Development versions of JCEF can be downloaded from http://javachromiumembedded.googlecode.com/svn/trunk/src.
+
+== Building from Source ==
+
+*Building from source code is currently only supported on Windows for 64-bit Java targets.*
+
+To build JCEF from source code you must start by configuring your build environment.
+
+1. Install the build prerequisites for your operating system and development environment.
+
+  * Windows - http://www.chromium.org/developers/how-tos/build-instructions-windows. Use a version 1.6.x SVN client as some people have reported problems with version 1.7.x. Version 1.6.x is included with depot_tools on Windows. A 1.6.X version of TortoiseSVN for Windows can be downloaded [http://sourceforge.net/projects/tortoisesvn/files/1.6.16/Application/ here].
+  * Mac OS-X - http://code.google.com/p/chromium/wiki/MacBuildInstructions
+  * Linux - http://code.google.com/p/chromium/wiki/LinuxBuildInstructions. Starting with CEF3 revision 1294 a dependency on the libgtkglext1-dev package has been added to support the off-screen rendering example in cefclient.
+
+2. Configure environment settings that will effect the [http://code.google.com/p/gyp/ GYP] build.
+
+  * CEF does not currently support component builds.
+  * Windows - JCEF developers are currently using Visual Studio 2010. For this reason building JCEF with other compiler versions may result in compile or runtime errors. If multiple versions of Visual Studio are installed on your system you can set the GYP_MSVS_VERSION environment variable to create project files for that version. For example, set the value to "2010" for VS2010 or "2010e" for VS2010 Express. Check the Chromium documentation for the correct value when using other Visual Studio versions.
+  * Mac OS-X - On Lion and higher, the 10.5 SDK is not available, so you must configure GYP to use the 10.6 SDK. Click [http://code.google.com/p/chromium/wiki/Xcode4Tips here] for more information.
+
+=== Manual Downloading  ===
+
+JCEF can be downloaded and built as a manual process.
+
+==== Development ====
+
+These download instructions apply only to the development (trunk) version of JCEF.
+
+1. Install depot_tools. To avoid potential problems make sure the path is as short as possible and does not contain spaces or special characters.
+
+A. Windows only: Install a version 1.6.X SVN client (see above for a TortoiseSVN 1.6 link) and add it to your PATH.
+
+B. Download depot_tools via SVN.
+
+{{{
+svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+}}}
+
+C. Add the depot_tools directory to your PATH. On Windows the depot_tools path should come before the TortoiseSVN path.
+
+2. Create a JCEF checkout directory (for example, /path/to/jcef). To avoid potential problems make sure the path is as short as possible and does not contain spaces or special characters.
+
+===== SVN workflow: =====
+
+This version of steps 4-8 applies to the SVN workflow only. The SVN workflow is recommended for most users.
+
+4. Configure gclient to use the trunk branch.
+
+{{{
+cd /path/to/jcef
+gclient config http://javachromiumembedded.googlecode.com/svn/trunk/src
+}}}
+
+5. Checkout JCEF or update an existing JCEF checkout.
+
+{{{
+cd /path/to/jcef
+gclient sync --jobs 8 --force
+}}}
+
+Note that this will fail on initial checkout with a "gyp: Undefined variable jcef_platform" error. This is expected behavior.
+
+6. Read the [http://javachromiumembedded.googlecode.com/svn/trunk/src/third_party/cef/README.jcef src\cef\third_party\README.jcef] file to determine the required CEF3 release branch. Download the most recent build of this branch from http://cefbuilds.com. Extract the contents as described in the README.jcef file. Using the "win64" target as an example, the resulting directory structure should be /path/to/jcef/src/third_party/cef/win64/cefclient.gyp (and so on).
+
+7. Set up the required GYP_DEFINES values.
+
+  * Windows - Set _jcef_platform_ to the desired build ("win32" or "win64").
+  * Windows - Set _jdk_directory_ to the full path to the currently installed JDK root directory.
+
+{{{
+set GYP_DEFINES=jcef_platform=win64 jdk_directory="C:\Program Files\Java\jdk1.7.0_25"
+}}}
+
+8. Generate the build project files from the [http://code.google.com/p/gyp/ GYP] configuration.
+
+{{{
+cd /path/to/jcef
+gclient runhooks
+}}}
+
+=== Manual Building ===
+
+1. Build the JCEF native code (dynamic library and helper executable).
+
+  * Windows - Open the Visual Studio solution file (jcef.sln) and build. If building the "win64" target make sure to set the "Active solution platform" to "x64" under Configuration Manager.
+
+2. Build the JCEF Java classes.
+
+{{{
+cd /path/to/jcef/src/tools
+compile.bat win64
+}}}
+
+3. Test that the resulting build works. This example assumes that the "Release" configuration was built in step #1.
+
+{{{
+cd /path/to/jcef/src/tools
+run.bat win64 Release
+}}}
+
+=== Manual Packaging ===
+
+After building the Release configurations you can use the make_distrib.bat script to create a binary distribution.
+
+{{{
+cd /path/to/jcef/src/tools
+make_distrib.bat win64
+}}}
+
+If the process succeeds a binary distribution package will be created in the /path/to/jcef/src/binary_distrib directory. See the README.txt file in that directory for usage instructions.
