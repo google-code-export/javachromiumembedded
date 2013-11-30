@@ -12,15 +12,14 @@ Development versions of JCEF can be downloaded from http://javachromiumembedded.
 
 == Building from Source ==
 
-*Building from source code is currently only supported on Windows for 64-bit Java targets.*
+*Building from source code is currently only supported on Windows and Linux for 64-bit Oracle 7 Java targets.*
 
 To build JCEF from source code you must start by configuring your build environment.
 
 1. Install the build prerequisites for your operating system and development environment.
 
-  * Windows - http://www.chromium.org/developers/how-tos/build-instructions-windows. Use a version 1.6.x SVN client as some people have reported problems with version 1.7.x. Version 1.6.x is included with depot_tools on Windows. A 1.6.X version of TortoiseSVN for Windows can be downloaded [http://sourceforge.net/projects/tortoisesvn/files/1.6.16/Application/ here].
-  * Mac OS-X - http://code.google.com/p/chromium/wiki/MacBuildInstructions
-  * Linux - http://code.google.com/p/chromium/wiki/LinuxBuildInstructions. Starting with CEF3 revision 1294 a dependency on the libgtkglext1-dev package has been added to support the off-screen rendering example in cefclient.
+  * Windows - Use a version 1.6.x SVN client as some people have reported problems with version 1.7.x. Version 1.6.x is included with depot_tools on Windows. A 1.6.X version of TortoiseSVN for Windows can be downloaded [http://sourceforge.net/projects/tortoisesvn/files/1.6.16/Application/ here].
+  * Linux - Currently supported distributions include Debian Wheezy, Ubuntu Precise, and related. Newer versions will likely also work but may not have been tested. Required packages include: build-essential, binutils-gold, libgtk2.0-dev, libgtkglext1-dev.
 
 2. Configure environment settings that will effect the [http://code.google.com/p/gyp/ GYP] build.
 
@@ -72,13 +71,21 @@ Note that this will fail on initial checkout with a "gyp: Undefined variable jce
 
 6. Read the [http://javachromiumembedded.googlecode.com/svn/trunk/src/third_party/cef/README.jcef src\cef\third_party\README.jcef] file to determine the required CEF3 release branch. Download the most recent build of this branch from http://cefbuilds.com. Extract the contents as described in the README.jcef file. Using the "win64" target as an example, the resulting directory structure should be /path/to/jcef/src/third_party/cef/win64/cefclient.gyp (and so on).
 
-7. Set up the required GYP_DEFINES values.
+7. Set up the required gyp environment variables.
 
-  * Windows - Set _jcef_platform_ to the desired build ("win32" or "win64").
-  * Windows - Set _jdk_directory_ to the full path to the currently installed JDK root directory.
+  * GYP_DEFINES:
+    * Set _jcef_platform_ to the desired build ("win32", "win64", "linux32", "linux64").
+    * Set _jdk_directory_ to the full path to the currently installed JDK root directory.
+  * GYP_GENERATORS:
+    * Ninja is not yet supported.
 
 {{{
+# Windows 64-bit
 set GYP_DEFINES=jcef_platform=win64 jdk_directory="C:\Program Files\Java\jdk1.7.0_25"
+
+# Linux 64-bit
+export GYP_GENERATORS=make
+export GYP_DEFINES="jcef_platform=linux64 jdk_directory=/usr/lib/jvm/java-7-oracle"
 }}}
 
 8. Generate the build project files from the [http://code.google.com/p/gyp/ GYP] configuration.
@@ -93,15 +100,21 @@ gclient runhooks
 1. Build the JCEF native code (dynamic library and helper executable).
 
   * Windows - Open the Visual Studio solution file (jcef.sln) and build. If building the "win64" target make sure to set the "Active solution platform" to "x64" under Configuration Manager.
+  * Linux - Use the _build.sh_ script.
 
-2. Build the JCEF Java classes.
+{{{
+cd /path/to/jcef/src/tools
+./build.sh Release
+}}}
+
+2. Build the JCEF Java classes using the _compile.[bat|sh]_ tool.
 
 {{{
 cd /path/to/jcef/src/tools
 compile.bat win64
 }}}
 
-3. Test that the resulting build works. This example assumes that the "Release" configuration was built in step #1.
+3. Test that the resulting build works using the _run.[bat|sh]_ tool. This example assumes that the "Release" configuration was built in step #1.
 
 {{{
 cd /path/to/jcef/src/tools
@@ -110,7 +123,7 @@ run.bat win64 Release
 
 === Manual Packaging ===
 
-After building the Release configurations you can use the make_distrib.bat script to create a binary distribution.
+After building the Release configurations you can use the _make_distrib.[bat|sh]_ script to create a binary distribution.
 
 {{{
 cd /path/to/jcef/src/tools
