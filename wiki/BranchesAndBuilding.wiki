@@ -12,7 +12,7 @@ Development versions of JCEF can be downloaded from http://javachromiumembedded.
 
 == Building from Source ==
 
-*Building from source code is currently only supported on Windows and Linux for 64-bit Oracle 7 Java targets.*
+*Building from source code is currently only supported on Windows, Linux and Mac OS X for 64-bit Oracle 7 Java targets.*
 
 To build JCEF from source code you must start by configuring your build environment.
 
@@ -25,7 +25,6 @@ To build JCEF from source code you must start by configuring your build environm
 
   * CEF does not currently support component builds.
   * Windows - JCEF developers are currently using Visual Studio 2010. For this reason building JCEF with other compiler versions may result in compile or runtime errors. If multiple versions of Visual Studio are installed on your system you can set the GYP_MSVS_VERSION environment variable to create project files for that version. For example, set the value to "2010" for VS2010 or "2010e" for VS2010 Express. Check the Chromium documentation for the correct value when using other Visual Studio versions.
-  * Mac OS-X - On Lion and higher, the 10.5 SDK is not available, so you must configure GYP to use the 10.6 SDK. Click [http://code.google.com/p/chromium/wiki/Xcode4Tips here] for more information.
 
 === Manual Downloading  ===
 
@@ -74,8 +73,9 @@ Note that this will fail on initial checkout with a "gyp: Undefined variable jce
 7. Set up the required gyp environment variables.
 
   * GYP_DEFINES:
-    * Set _jcef_platform_ to the desired build ("win32", "win64", "linux32", "linux64").
+    * Set _jcef_platform_ to the desired build ("win32", "win64", "linux32", "linux64", “macosx64”).
     * Set _jdk_directory_ to the full path to the currently installed JDK root directory.
+    * Set _target_arch_ to x64 for the 64-bit Mac OS X build.
   * GYP_GENERATORS:
     * Ninja is not yet supported.
 
@@ -86,6 +86,10 @@ set GYP_DEFINES=jcef_platform=win64 jdk_directory="C:\Program Files\Java\jdk1.7.
 # Linux 64-bit
 export GYP_GENERATORS=make
 export GYP_DEFINES="jcef_platform=linux64 jdk_directory=/usr/lib/jvm/java-7-oracle"
+
+# Mac OS X 64-bit
+export GYP_GENERATORS=xcode
+export GYP_DEFINES="jcef_platform=macosx64 jdk_directory=/System/Library/Frameworks/JavaVM.framework target_arch=x64"
 }}}
 
 8. Generate the build project files from the [http://code.google.com/p/gyp/ GYP] configuration.
@@ -100,6 +104,7 @@ gclient runhooks
 1. Build the JCEF native code (dynamic library and helper executable).
 
   * Windows - Open the Visual Studio solution file (jcef.sln) and build. If building the "win64" target make sure to set the "Active solution platform" to "x64" under Configuration Manager.
+  * Mac OS X - Open the Xcode project file (jcef.xcodeproj) and build the jcef_app target.
   * Linux - Use the _build.sh_ script.
 
 {{{
