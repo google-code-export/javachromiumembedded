@@ -50,16 +50,16 @@ C. Add the depot_tools directory to your PATH. On Windows the depot_tools path s
 
 ===== SVN workflow: =====
 
-This version of steps 4-8 applies to the SVN workflow only. The SVN workflow is recommended for most users.
+This version of steps 3-7 applies to the SVN workflow only. The SVN workflow is recommended for most users.
 
-4. Configure gclient to use the trunk branch.
+3. Configure gclient to use the trunk branch.
 
 {{{
 cd /path/to/jcef
 gclient config http://javachromiumembedded.googlecode.com/svn/trunk/src
 }}}
 
-5. Checkout JCEF or update an existing JCEF checkout.
+4. Checkout JCEF or update an existing JCEF checkout.
 
 {{{
 cd /path/to/jcef
@@ -68,13 +68,13 @@ gclient sync --jobs 8 --force
 
 Note that this will fail on initial checkout with a "gyp: Undefined variable jcef_platform" error. This is expected behavior.
 
-6. Read the [http://javachromiumembedded.googlecode.com/svn/trunk/src/third_party/cef/README.jcef src\cef\third_party\README.jcef] file to determine the required CEF3 release branch. Download the most recent build of this branch from http://cefbuilds.com. Extract the contents as described in the README.jcef file. Using the "win64" target as an example, the resulting directory structure should be /path/to/jcef/src/third_party/cef/win64/cefclient.gyp (and so on).
+5. Read the [http://javachromiumembedded.googlecode.com/svn/trunk/src/third_party/cef/README.jcef src\cef\third_party\README.jcef] file to determine the required CEF3 release branch. Download the most recent build of this branch from http://cefbuilds.com. Extract the contents as described in the README.jcef file. Using the "win64" target as an example, the resulting directory structure should be /path/to/jcef/src/third_party/cef/win64/cefclient.gyp (and so on).
 
-7. Set up the required gyp environment variables.
+6. Set up the required gyp environment variables.
 
   * GYP_DEFINES:
     * Set _jcef_platform_ to the desired build ("win32", "win64", "linux32", "linux64", “macosx64”).
-    * Set _jdk_directory_ to the full path to the currently installed JDK root directory.
+    * Set _jdk_directory_ to the full path to the currently installed JDK7 root directory.
     * Set _target_arch_ to x64 for the 64-bit Mac OS X build.
   * GYP_GENERATORS:
     * Ninja is not yet supported.
@@ -89,10 +89,15 @@ export GYP_DEFINES="jcef_platform=linux64 jdk_directory=/usr/lib/jvm/java-7-orac
 
 # Mac OS X 64-bit
 export GYP_GENERATORS=xcode
-export GYP_DEFINES="jcef_platform=macosx64 jdk_directory=/System/Library/Frameworks/JavaVM.framework target_arch=x64"
+export GYP_DEFINES="jcef_platform=macosx64 jdk_directory=/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home target_arch=x64"
 }}}
 
-8. Generate the build project files from the [http://code.google.com/p/gyp/ GYP] configuration.
+Mac Only: You can figure out your JDK7 directory via the command line tool java_home:
+{{{
+/usr/libexec/java_home -Fv 1.7.0_40+
+}}}
+
+7. Generate the build project files from the [http://code.google.com/p/gyp/ GYP] configuration.
 
 {{{
 cd /path/to/jcef
@@ -104,7 +109,7 @@ gclient runhooks
 1. Build the JCEF native code (dynamic library and helper executable).
 
   * Windows - Open the Visual Studio solution file (jcef.sln) and build. If building the "win64" target make sure to set the "Active solution platform" to "x64" under Configuration Manager.
-  * Mac OS X - Open the Xcode project file (jcef.xcodeproj) and build the jcef_app target.
+  * Mac OS X - Open the Xcode project file (jcef.xcodeproj) and build the “All(jcef project)” target.
   * Linux - Use the _build.sh_ script.
 
 {{{
@@ -112,18 +117,27 @@ cd /path/to/jcef/src/tools
 ./build.sh Release
 }}}
 
-2. Build the JCEF Java classes using the _compile.[bat|sh]_ tool.
+2. On Windows and Linux build the JCEF Java classes using the _compile.[bat|sh]_ tool.
 
 {{{
 cd /path/to/jcef/src/tools
 compile.bat win64
 }}}
 
-3. Test that the resulting build works using the _run.[bat|sh]_ tool. This example assumes that the "Release" configuration was built in step #1.
+On Mac OS X the JCEF Java classes are already built by Xcode. 
+
+3. On Windows and Linux test that the resulting build works using the _run.[bat|sh]_ tool. This example assumes that the "Release" configuration was built in step #1.
 
 {{{
 cd /path/to/jcef/src/tools
 run.bat win64 Release
+}}}
+
+On Mac OS X run jcef_app using the command-line or by double-clicking on jcef_app in Finder.
+
+{{{
+cd /path/to/jcef/src/xcodebuild/Release
+open jcef_app.app
 }}}
 
 === Manual Packaging ===
