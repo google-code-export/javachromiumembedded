@@ -81,6 +81,7 @@ Note that this will fail on initial checkout with a "gyp: Undefined variable jce
 
 {{{
 # Windows 64-bit
+set GYP_GENERATORS=msvs
 set GYP_DEFINES=jcef_platform=win64 jdk_directory="C:\Program Files\Java\jdk1.7.0_25"
 
 # Linux 64-bit
