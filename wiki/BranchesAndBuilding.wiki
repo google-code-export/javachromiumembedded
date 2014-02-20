@@ -20,6 +20,7 @@ To build JCEF from source code you must start by configuring your build environm
 
   * Windows - Use a version 1.6.x SVN client as some people have reported problems with version 1.7.x. Version 1.6.x is included with depot_tools on Windows. A 1.6.X version of TortoiseSVN for Windows can be downloaded [http://sourceforge.net/projects/tortoisesvn/files/1.6.16/Application/ here].
   * Linux - Currently supported distributions include Debian Wheezy, Ubuntu Precise, and related. Newer versions will likely also work but may not have been tested. Required packages include: build-essential, binutils-gold, libgtk2.0-dev.
+  * Linux - Ubuntu Saucy includes the gold linker as part of the binutils package (no need to install a separate binutils-gold package). You will need to manually change the /usr/bin/ld symlink so that it points to ld.gold instead of ld.bfd.
 
 2. Configure environment settings that will effect the [http://code.google.com/p/gyp/ GYP] build.
 
