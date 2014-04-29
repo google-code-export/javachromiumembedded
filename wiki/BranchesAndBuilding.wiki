@@ -12,7 +12,7 @@ Development versions of JCEF can be downloaded from http://javachromiumembedded.
 
 == Building from Source ==
 
-*Building from source code is currently only supported on Windows, Linux and Mac OS X for 64-bit Oracle 7 Java targets.*
+Building from source code is currently supported on Windows, Linux and Mac OS X for 64-bit Oracle 7 Java targets. 32-bit builds are also possible on Windows and Linux but they are untested.
 
 To build JCEF from source code you must start by configuring your build environment.
 
@@ -20,7 +20,6 @@ To build JCEF from source code you must start by configuring your build environm
 
   * Windows - Use a version 1.6.x SVN client as some people have reported problems with version 1.7.x. Version 1.6.x is included with depot_tools on Windows. A 1.6.X version of TortoiseSVN for Windows can be downloaded [http://sourceforge.net/projects/tortoisesvn/files/1.6.16/Application/ here].
   * Linux - Currently supported distributions include Debian Wheezy, Ubuntu Precise, and related. Newer versions will likely also work but may not have been tested. Required packages include: build-essential, binutils-gold, libgtk2.0-dev.
-  * Linux - Ubuntu Saucy includes the gold linker as part of the binutils package (no need to install a separate binutils-gold package). You will need to manually change the /usr/bin/ld symlink so that it points to ld.gold instead of ld.bfd.
 
 2. Configure environment settings that will effect the [http://code.google.com/p/gyp/ GYP] build.
 
@@ -128,14 +127,14 @@ compile.bat win64
 
 On Mac OS X the JCEF Java classes are already built by Xcode. 
 
-3. On Windows and Linux test that the resulting build works using the _run.[bat|sh]_ tool. This example assumes that the "Release" configuration was built in step #1.
+3. On Windows and Linux test that the resulting build works using the _run.[bat|sh]_ tool. You can either run the simple example (see java/simple/MainFrame.java) or the detailed one (see java/detailed/MainFrame.java) by appending "detailed" or "simple" to the _run.[bat|sh]_ tool. This example assumes that the "Release" configuration was built in step #1 and that you want to use the detailed example.
 
 {{{
 cd /path/to/jcef/src/tools
-run.bat win64 Release
+run.bat win64 Release detailed
 }}}
 
-On Mac OS X run jcef_app using the command-line or by double-clicking on jcef_app in Finder.
+On Mac OS X run jcef_app for the detailed example or jcef_simple_app for the simple one. Either use the command-line or double-click on jcef_app (or jcef_simple_app) in Finder.
 
 {{{
 cd /path/to/jcef/src/xcodebuild/Release
